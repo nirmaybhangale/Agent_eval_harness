@@ -1,6 +1,7 @@
 import csv
 import os
 from collections import Counter
+from pathlib import Path
 from tests.telemetry import test_results_log
 
 def pytest_sessionfinish(session, exitstatus):
@@ -11,17 +12,20 @@ def pytest_sessionfinish(session, exitstatus):
     if not test_results_log:
         return
 
-    os.makedirs("results", exist_ok=True)
+    # 1. Anchor strictly to the project root (one level up from this file)
+    project_root = Path(__file__).parent.parent
+    results_dir = project_root / "results"
+    results_dir.mkdir(exist_ok=True)
     
-    # 1. Generate CSV
-    csv_path = "results/results.csv"
+    # 2. Generate CSV
+    csv_path = results_dir / "results.csv"
     keys = test_results_log[0].keys()
-    with open(csv_path, "w", newline="") as f:
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=keys)
         writer.writeheader()
         writer.writerows(test_results_log)
         
-    # 2. Calculate Aggregate Metrics
+    # 3. Calculate Aggregate Metrics
     total_runs = len(test_results_log)
     passed_runs = sum(1 for r in test_results_log if r["passed"])
     success_rate = (passed_runs / total_runs) * 100
@@ -29,13 +33,12 @@ def pytest_sessionfinish(session, exitstatus):
     avg_cost = total_cost / passed_runs if passed_runs else 0
     avg_steps = sum(r["steps"] for r in test_results_log) / total_runs
     
-    # Extract failure reasons
     failures = [r["failure_reasons"] for r in test_results_log if not r["passed"]]
     common_failures = Counter(failures).most_common(3)
 
-    # 3. Generate Markdown Report
-    md_path = "results/run_summary.md"
-    with open(md_path, "w") as f:
+    # 4. Generate Markdown Report
+    md_path = results_dir / "run_summary.md"
+    with open(md_path, "w", encoding="utf-8") as f:
         f.write("# 📊 Agent Reliability Harness - Run Summary\n\n")
         f.write("## 📈 Aggregate Metrics\n")
         f.write(f"- **Total Test Cases Executed:** {total_runs}\n")

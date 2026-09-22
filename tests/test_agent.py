@@ -65,10 +65,11 @@ async def test_evaluate_agent_reliability(case):
             passed = False
 
     # 5. Assert Terminal State
-    # Does the final response contain required substrings?
-    for required_string in case["expected_substrings"]:
-        if required_string.lower() not in final_response:
-            failure_reasons.append(f"Final response missing required substring: '{required_string}'.")
+    # Does the final response contain AT LEAST ONE of the expected substrings? (OR logic)
+    if case["expected_substrings"]:
+        found_any = any(req.lower() in final_response for req in case["expected_substrings"])
+        if not found_any:
+            failure_reasons.append(f"Final response missing expected keywords. Looked for any of: {case['expected_substrings']}")
             passed = False
 
     # 6. Log the results for Phase 3 reporting

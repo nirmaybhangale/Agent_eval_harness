@@ -1,8 +1,11 @@
 import json
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 from groq import AsyncGroq
 from .tools import check_order_status, issue_refund, search_store_policies
+
+load_dotenv()
 
 client = AsyncGroq(api_key=os.getenv("GROQ_API_KEY"))
 
