@@ -1,5 +1,6 @@
 import json
 import os
+from dotenv import load_dotenv
 from groq import AsyncGroq
 from .tools import check_order_status, issue_refund, search_store_policies
 
