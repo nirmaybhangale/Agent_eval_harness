@@ -1,7 +1,7 @@
 import csv
 import os
 from collections import Counter
-from .test_agent import test_results_log
+from tests.telemetry import test_results_log
 
 def pytest_sessionfinish(session, exitstatus):
     """

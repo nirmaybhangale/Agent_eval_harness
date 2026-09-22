@@ -3,15 +3,12 @@ import pytest
 import os
 import json
 from src.agent import run_support_agent
+from tests.test_cases import test_cases
+from tests.telemetry import test_results_log
 
 # Mock prices for openai/gpt-oss-20b (as of mid-2026)
 PRICE_PER_1M_INPUT = 0.075
 PRICE_PER_1M_OUTPUT = 0.30
-
-from .test_cases import test_cases
-
-#A global dictionary to store the results of test
-test_results_log = []
 
 def calculate_cost(input_tokens: int, output_tokens: int) -> float:
     """Calculates the exact execution cost for a single run."""
